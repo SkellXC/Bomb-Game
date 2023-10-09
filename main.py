@@ -1,6 +1,4 @@
-from math import e
 from random import randint
-from turtle import pos
 board = [[0 for x in range(10)] for x in range(10)]
 # Creates a 10 by 10 array full of zeros using list comprehension
 
@@ -10,8 +8,8 @@ def add_bombs(board):
         y = randint(0,9)# 
         #print(x,y)
         board[y][x] = 1 # sets it to 1 so that when the player is on 1, the game knows a bomb is in that spot
-    board[0][0] = 0# spawn point can't have a bomb
-    board[9][9] = 0# end point can't have a bomb
+    board[0][0], board[9][9] = 0,0# spawn point can't have a bomb
+    #board[9][9] = 0# end point can't have a bomb
     return board
 
 def showboard(board):
@@ -25,6 +23,7 @@ class player:
         self.coins = coins
         #self.position = [0,0]# Starts the player at 0,0
         self.position = position
+        self.control_scheme = True
     def get_coords(self):
         return [self.position[0],self.position[1]]
     def lose_life(self):
@@ -37,63 +36,58 @@ class player:
         
     def dead(self):
         print("You just died! Game Over.")
-        exit()
-        
+        exit()    
         # Will add more stuff here sometime soon
 
-    def traverse(self,position,move):# Coords in the form y,x
-        if move == "l":# left
-            if position[1] == 0:
-                print("You can't go any further left")
-            else:
-                self.position[1] -= 1
-                print(f"Moved successfully. You are now at {self.position} (y,x)")
-            
-            
-        elif move == "r":# right
-            if position[1] == 9:
-                print("You can't go any further right")
-            else:
-                self.position[1] += 1
-                print(f"Moved successfully. You are now at {self.position} (y,x)")
-            
-        elif move == "u":# up
-            if position[0] == 0:
-                print("You can't go any further up")
-            else:
-                self.position[0] -= 1
-                print(f"Moved successfully. You are now at {self.position} (y,x)")
 
-        elif move == "d":# down
-             if position[0] == 9:
-                print("You can't go any further down")
-             else:
-                self.position[0] += 1
-                print(f"Moved successfully. You are now at {self.position} (y,x)")
-
+    def navigate(self, position, move,start = False):
+        board[position[0]][position[1]] = 0
+        # Since "x" replaces the 0 to point out where the player is, this resets the previous position to 0
+        # before we move the player to the new position
+        wasd = True# pick which one you want to use
+        udlr = False
+        commands = {wasd: {"w": [-1, 0], "a": [0, -1], "s": [1, 0], "d": [0, 1]},
+                    udlr: {"u": [-1, 0], "d": [1, 0], "l": [0, -1], "r": [0, 1]}}
+        showboard(board)
+        if move in commands[self.control_scheme]:# Checks to see if the move is in the dictionary
+            pos_change = commands[self.control_scheme][move]# Adds the vector to the position
+            new_pos = [position[0] + pos_change[0], position[1] + pos_change[1]]# Split it so its easier to read
+            if not self.is_valid_position(new_pos):
+                print("You cannot move there")
+                return
+            self.position = new_pos# Puts the player on the new position
+            print(f"Moved successfully. You are now at {self.position} (y,x)")
+            if board[self.position[0]][self.position[1]] == 1:# Checks for bombs and takes away lives
+                self.lose_life()
+            board[self.position[0]][self.position[1]] = "x"# Marks player position with an 'x'
+            showboard(board)                               # this is reset at the start of the function
         else:
             print("This is not a valid move")
-            #move = input("Use U/D/L/R\n").lower()
-        if board[self.position[0]][self.position[1]] == 1:
-            self.lose_life()
-        if position[0] == 9 and position[1] == 9:
+        if self.position[0] == 9 and self.position[1] == 9:# Checks if the player has won
+            showboard(board)
             self.coins += 10
             print(f"You have reached the end! You now have {self.coins} coins!")
             exit()
 
+    def is_valid_position(self, position):
+        y, x = position
+        if y < 0 or y >= len(board) or x < 0 or x >= len(board[0]) or board[y][x] == "X":
+            return False
+        # Ensures that the position is within the confines of the board (10x10) and returns a boolean
+        return True
+
 
 add_bombs(board)
-showboard(board)
+#showboard(board)
 
+me = player(10,10,[0,0])
+me.navigate(me.position,"u")
 
-me = player(1,10,[0,0])
-#me.lose_life()
-me.traverse(me.position,"u")
 def play():
    print("Which direction do you want to move in? Use U/D/L/R")
    while True:
         move = input("").lower()
-        me.traverse(me.position,move)
+        me.navigate(me.position,move)
 
             
 play()
