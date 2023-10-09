@@ -24,6 +24,8 @@ class player:
         #self.position = [0,0]# Starts the player at 0,0
         self.position = position
         self.control_scheme = True
+        self.udlr = False
+        self.wasd = True
     def get_coords(self):
         return [self.position[0],self.position[1]]
     def lose_life(self):
@@ -44,10 +46,10 @@ class player:
         board[position[0]][position[1]] = 0
         # Since "x" replaces the 0 to point out where the player is, this resets the previous position to 0
         # before we move the player to the new position
-        wasd = True# pick which one you want to use
-        udlr = False
-        commands = {wasd: {"w": [-1, 0], "a": [0, -1], "s": [1, 0], "d": [0, 1]},
-                    udlr: {"u": [-1, 0], "d": [1, 0], "l": [0, -1], "r": [0, 1]}}
+        
+
+        commands = {self.wasd: {"w": [-1, 0], "a": [0, -1], "s": [1, 0], "d": [0, 1]},
+                    self.udlr: {"u": [-1, 0], "d": [1, 0], "l": [0, -1], "r": [0, 1]}}
         showboard(board)
         if move in commands[self.control_scheme]:# Checks to see if the move is in the dictionary
             pos_change = commands[self.control_scheme][move]# Adds the vector to the position
@@ -61,13 +63,21 @@ class player:
                 self.lose_life()
             board[self.position[0]][self.position[1]] = "x"# Marks player position with an 'x'
             showboard(board)                               # this is reset at the start of the function
+            print("|---------------------------|")
         else:
             print("This is not a valid move")
         if self.position[0] == 9 and self.position[1] == 9:# Checks if the player has won
+            print("|---------------------------|")
             showboard(board)
             self.coins += 10
             print(f"You have reached the end! You now have {self.coins} coins!")
-            exit()
+            print("|---------------------------|")
+            print("Would you like to play again or return to the main menu?\n1. Play again\n2. Main Menu")
+            ans = input("")
+            if ans == "1":
+                play()
+            else:
+                menu()
 
     def is_valid_position(self, position):
         y, x = position
@@ -77,17 +87,75 @@ class player:
         return True
 
 
+
 add_bombs(board)
 #showboard(board)
 
 me = player(10,10,[0,0])
-me.navigate(me.position,"u")
+#me.navigate(me.position,"u")
+def settings():
+    print("[+] Settings [+]")
+    print("1. Controls")
+    print("2. Exit")
+    ans = input("What would you like to change? ").lower()
+    if ans == "1":
+        print("[+] Settings -> Controls [+]")
+        print("1. WASD")
+        print("2. UDLR")
+        ans = input("Which mode would you like to it change to? ").lower()
+        if ans == "1" or ans == "wasd":
+            me.control_scheme = True
+            me.udlr = False
+            me.wasd = True
+            print("Mode changed to WASD")
+            menu()
+        elif ans == "2" or ans == "udlr":
+            me.control_scheme = False
+            me.udlr = True
+            me.wasd = False
+            print("Mode changed to UDLR")
+            menu()
+        else:
+            print("That is not a valid choice")
+            menu()
+
+def menu():# Basic if/else menu
+    print("-- Main Menu --\n")
+    print("1. Play")
+    print("2. Settings")
+    print("3. Exit")
+    while True:
+        choice = input("What would you like to do? ")
+        if choice == "1":
+            play()
+        elif choice == "2":
+            settings()
+        elif choice == "3":
+            exit()
+        else:
+            print("That is not a valid choice")
+
+
 
 def play():
-   print("Which direction do you want to move in? Use U/D/L/R")
+   showboard(board) 
+   print(f"Which direction do you want to move in? Use {f'WASD' if me.wasd else f'UDLR'} to move.")
    while True:
         move = input("").lower()
         me.navigate(me.position,move)
 
-            
-play()
+print("Welcome to the bomb game!\n")            
+menu()
+
+"""
+Custom controls
+Levels and xp
+Harder modes
+nxn boards
+customize character (name, color, etc)
+
+Bugs:
+    Settings won't change controls
+    in my program, the settings function should be changing the controls from wasd to udlr if the player wants to and it does change the boolean value of the variables yet it doesn't seem to work.
+    try this prompt on vscode to fix. 
+"""
