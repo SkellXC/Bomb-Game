@@ -38,6 +38,8 @@ class player:
         
     def dead(self):
         print("You just died! Game Over.")
+        board[position[0]][position[1]] = 0# Removes the 'x' from the end position
+        self.position = [0,0]# Resets the player position
         exit()    
         # Will add more stuff here sometime soon
 
@@ -47,9 +49,9 @@ class player:
         # Since "x" replaces the 0 to point out where the player is, this resets the previous position to 0
         # before we move the player to the new position
         
-
-        commands = {self.wasd: {"w": [-1, 0], "a": [0, -1], "s": [1, 0], "d": [0, 1]},
-                    self.udlr: {"u": [-1, 0], "d": [1, 0], "l": [0, -1], "r": [0, 1]}}
+        self.control_scheme = "wasd" if self.wasd else "udlr" 
+        commands = {"wasd": {"w": [-1, 0], "a": [0, -1], "s": [1, 0], "d": [0, 1]},
+                    "udlr": {"u": [-1, 0], "d": [1, 0], "l": [0, -1], "r": [0, 1]}}
         showboard(board)
         if move in commands[self.control_scheme]:# Checks to see if the move is in the dictionary
             pos_change = commands[self.control_scheme][move]# Adds the vector to the position
@@ -73,6 +75,8 @@ class player:
             print(f"You have reached the end! You now have {self.coins} coins!")
             print("|---------------------------|")
             print("Would you like to play again or return to the main menu?\n1. Play again\n2. Main Menu")
+            board[position[0]][position[1]] = 0 # Removes the 'x' from the end position
+            self.position = [0,0]# Resets the player position
             ans = input("")
             if ans == "1":
                 play()
@@ -131,6 +135,7 @@ def menu():# Basic if/else menu
         elif choice == "2":
             settings()
         elif choice == "3":
+            print("Hope you had fun!")
             exit()
         else:
             print("That is not a valid choice")
@@ -154,8 +159,4 @@ Harder modes
 nxn boards
 customize character (name, color, etc)
 
-Bugs:
-    Settings won't change controls
-    in my program, the settings function should be changing the controls from wasd to udlr if the player wants to and it does change the boolean value of the variables yet it doesn't seem to work.
-    try this prompt on vscode to fix. 
 """
