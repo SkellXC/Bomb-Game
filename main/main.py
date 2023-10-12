@@ -159,7 +159,26 @@ def play():
 
 print("Welcome to the bomb game!\n")            
 menu()
-#11:12 no longer know what I'm doing
+#11:16 no longer know what I'm doing
+def shop():
+
+    map_designs = {
+        "0":10,
+        "/":40,
+        "#":60
+        }
+    print("[+] Shop [+]")
+    print("Welcome to the shop!\nWhat kind of items are you looking to buy?")
+    print("[-] Map Designs [-]")
+
+    ans = input("\nType the category your interested in\n").lower()
+    if ans in "map design":
+        for item, cost in map_designs.items():
+            print(f"{item}: {cost} coins")
+        # add some stuff that lets the user leave the shop one page at a time
+        # or to just go back to the main menu directly.
+        # Also add a way to buy stuff
+    
 """
 Custom controls
 Levels and xp
