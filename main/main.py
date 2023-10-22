@@ -3,8 +3,7 @@ from time import sleep
 
 
 # Creates a 10 by 10 array full of zeros using list comprehension
-# def create_board():
-# return [[me.map for x in range(10)] for x in range(10)]
+
 # Creates a 10x10 array full of whatever is stored in me.map.
 def create_board():
     local_board = [[me.map for x in range(10)] for x in range(10)]
@@ -15,7 +14,6 @@ def create_board():
         local_board[y][x] = 1  # sets it to 1 so that when the player is on 1, the game knows a bomb is in that spot
     local_board[0][0], local_board[9][9] = me.character, 0  # spawn point can't have a bomb
     # board[9][9] = 0# end point can't have a bomb
-
     return local_board
 
 
@@ -52,16 +50,32 @@ class player:
             self.dead(board)
 
     def dead(self, board):
-        print("You just died! Game Over.")
-        board[position[0]][
-            position[1]
-        ] = self.map  # Removes the 'x' from the end position
-        self.position = [0, 0]  # Resets the player position
+        revive = False # Don't know why this works really. If it ain't broke, don't fix it
+        print("You just died! Game Over..?\nWait what?")
+        print("You've been given a special oppertunity to continue playing!")
+        print("For the low low price of 5 coins, you can revive yourself!")
+        ans = input("Would you like to revive yourself?\n1. Yes\n2. Accept death\n")
+        if ans == "1":
+            if self.coins >= 5:
+                self.coins -= 5
+                self.lives += 1
+                print(f"You have revived yourself! You now have {self.lives} lives!")
+                self.navigate(self.position, board,move="revived")
+                revive = True
+            else:
+                print("You do not have enough coins to revive yourself")
+        else:
+            print("Off to the shadow realm you go!")
+            
 
-        exit()
-        # Will add more stuff here sometime soon
+        if not revive:
+            board[self.position[0]][self.position[1]] = self.map  # Removes the 'x' from the end position
+            self.position = [0, 0]  # Resets the player position
+            self.lives = 1
+            menu()
+        # Will add more stuff here soontm
 
-    def navigate(self, position, move, board, start=False):
+    def navigate(self, position, board, move):
         board[position[0]][position[1]] = self.map
         # Since "x" replaces the 0 to point out where the player is, this resets the previous position to 0
         # before we move the player to the new position
@@ -71,13 +85,11 @@ class player:
             "wasd": {"w": [-1, 0], "a": [0, -1], "s": [1, 0], "d": [0, 1]},
             "udlr": {"u": [-1, 0], "d": [1, 0], "l": [0, -1], "r": [0, 1]},
         }
-        # showboard(board)
+
         if (
             move in commands[self.control_scheme]
         ):  # Checks to see if the move is in the dictionary by using the key stored in "control scheme"
-            pos_change = commands[self.control_scheme][
-                move
-            ]  # Adds the vector to the position
+            pos_change = commands[self.control_scheme][move]  # Adds the vector to the position
             new_pos = [
                 position[0] + pos_change[0],
                 position[1] + pos_change[1],
@@ -86,18 +98,15 @@ class player:
                 print("You cannot move there")
                 return
             self.position = new_pos  # Puts the player on the new position bing bong
-            print(
-                f"Moved successfully. You are now at {self.position[1]},{self.position[0]}"
-            )  # x,y as self.position is in the form y,x
-            if (
-                board[self.position[0]][self.position[1]] == 1
-            ):  # Checks for bombs and takes away lives
+            print(f"Moved successfully. You are now at {self.position[1]},{self.position[0]}")  # x,y as self.position is in the form y,x
+            if (board[self.position[0]][self.position[1]] == 1):  # Checks for bombs and takes away lives
                 self.lose_life(board)
             board[self.position[0]][self.position[1]] = "x"  # Marks player position with an 'x'
             showboard(board)  # this is reset at the start of the function
             print("|---------------------------|")
-        else:
-            print("This is not a valid move")
+        else: 
+            print("This is not a valid move") if move != "revived" else print("")
+            return
         if (
             self.position[0] == 9 and self.position[1] == 9
         ):  # Checks if the player has won
@@ -175,7 +184,6 @@ def verify(item):
         return True
     return False
 
-# me.navigate(me.position,"u")
 def settings():
     print("[+] Settings [+]")
     print(
@@ -185,6 +193,8 @@ def settings():
     )  # The \ is used to continue the string on the next line
 
     ans = input("What would you like to change? ").lower()
+    if ans == "back" or ans == "bac" or ans == "exit" or ans == "leave" or ans == "return" or ans == "menu" or ans == "go back":
+        menu()
     if ans == "1":  # Self explanatory
         sleep(1.5)
         print("[+] Settings -> Controls [+]")
@@ -266,7 +276,7 @@ def play():
     )
     while True:
         move = input("").lower()
-        me.navigate(me.position, move, local_board)
+        me.navigate(me.position,local_board,move=move)
 
 # 11:16 no longer know what I'm doing
 def shop():
@@ -281,8 +291,7 @@ def shop():
     ans = input("").lower()
     print(f"ans = {ans}")
     if ans == "back" or ans == "bac" or ans == "exit" or ans == "leave" or ans == "return" or ans == "menu":
-        print("Returning to the main menu")
-        shop()
+        menu()
     if ans == "1" or ans in "map_designs":
         print("Type 'buy' to buy an item or 'back' to return to the shop")
         for item, cost in map_designs.items():
@@ -355,7 +364,7 @@ def shop():
     # Also add a way to buy stuff
 
 
-me = player(10, 500, [0, 0], "-")  # Creates a player
+me = player(1, 500, [0, 0], "-")  # Creates a player
 #me.add_item("Sword")
 print("Welcome to the bomb game!\n")
 menu()
