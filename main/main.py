@@ -151,13 +151,16 @@ class player:
             print(f"[-] {item}")
 
     def select_item(self, item,map=False,character=False,bomb=False):
+        change = False
         if item not in self.inventory:
             print("You do not own this item")
             sleep(1.5)
             print(self.inventory)
-        elif not verify(item):
+            shop()
+        if not verify(item):
             print("This is not a valid item")
             print(self.inventory)
+            shop()
 
         me.map = item if map else me.map# Sets the map to the item if map is true
         me.character = item if character else me.character# Sets the character to the item if map is false
@@ -208,7 +211,9 @@ def settings():
         print("[+] Settings -> Customization [+]\n")
         print("1. Change map")
         print("2. Change character")
-        ans = input("What would you like to change? ").lower()
+        print("3. Change bombs")
+        print("\nNote: Items can be used interchangeably.\nThis means map designs can be used as characters and vice versa\n")
+        ans = input("What would you like to change?\n").lower()
         if ans == "1":
             print("Which map would you like to use?")
             me.inventoryView()
@@ -231,11 +236,12 @@ def settings():
 
 
 def menu():  # Basic if/else menu
-    print("-- Main Menu --\n")
-    print("1. Play")
-    print("2. Shop")
-    print("3. Settings")
-    print("4. Exit")
+    print( "-- Main Menu --\n")
+    print( f"Coins: {me.coins}")
+    print( "1. Play")
+    print( "2. Shop")
+    print( "3. Settings")
+    print( "4. Exit")
     #sleep(1.5)
     while 1:  # While 1 instead of True since I'm fancy
         choice = input("\nWhat would you like to do?\n")
@@ -268,11 +274,16 @@ def shop():
     characters = {"x": 10, "o": 40, "@": 60}
     bombs = {"v":10,"*":40,"+":60}
     print("[+] Shop [+]")
+    print(f"Coins: {me.coins}\n")
     print("[-] Map Designs [-]")
     print("[-] Characters [-]")
     print("[-] Bombs [-]")
     ans = input("").lower()
-    if ans == "1"or ans in "map_designs":
+    print(f"ans = {ans}")
+    if ans == "back" or ans == "bac" or ans == "exit" or ans == "leave" or ans == "return" or ans == "menu":
+        print("Returning to the main menu")
+        shop()
+    if ans == "1" or ans in "map_designs":
         print("Type 'buy' to buy an item or 'back' to return to the shop")
         for item, cost in map_designs.items():
             print(f"{item}: {cost} coins")
@@ -282,9 +293,13 @@ def shop():
         for item, cost in characters.items():
             print(f"{item}: {cost} coins")
         ans = input("")
-    if ans == "back" or ans == "bac":
-        shop()
-    elif "buy" in ans:
+    elif ans == "3" or ans in "bombs":
+        print("Type 'buy' to buy an item or 'back' to return to the shop")
+        for item, cost in bombs.items():
+            print(f"{item}: {cost} coins")
+        ans = input("")
+
+    if "buy" in ans:
         ans = ans.replace("buy", "").strip()
         if ans in me.inventory:
             print("You already own this item")
@@ -333,6 +348,7 @@ def shop():
         print("Type 'buy' followed by the item your purchasing")
         sleep(1.5)
         shop()
+    print("Fail")
     menu()
     # add some stuff that lets the user leave the shop one page at a time
     # or to just go back to the main menu directly.
