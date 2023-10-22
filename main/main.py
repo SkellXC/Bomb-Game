@@ -81,7 +81,7 @@ class player:
             new_pos = [
                 position[0] + pos_change[0],
                 position[1] + pos_change[1],
-            ]  # Split it so its easier to read
+            ]  
             if not self.is_valid_position(new_pos, board):
                 print("You cannot move there")
                 return
@@ -93,9 +93,7 @@ class player:
                 board[self.position[0]][self.position[1]] == 1
             ):  # Checks for bombs and takes away lives
                 self.lose_life(board)
-            board[self.position[0]][
-                self.position[1]
-            ] = "x"  # Marks player position with an 'x'
+            board[self.position[0]][self.position[1]] = "x"  # Marks player position with an 'x'
             showboard(board)  # this is reset at the start of the function
             print("|---------------------------|")
         else:
@@ -149,12 +147,8 @@ class player:
 
     def inventoryView(self):
         print("Inventory:")
-        for (
-            item
-        ) in (
-            self.inventory
-        ):  # Prints each item in the inventory | C# equivalent of foreach
-            print(item)
+        for item in self.inventory:  # Prints each item in the inventory | C# equivalent of foreach
+            print(f"[-] {item}")
 
     def select_item(self, item,map=False,character=False,bomb=False):
         if item not in self.inventory:
