@@ -345,9 +345,6 @@ def shop():
     # Also add a way to buy stuff
 
 
-def inp():  # Simple way to close functions that don't return anything
-    input("")  # Taken this from another project of mine
-
 me = player(10, 500, [0, 0], "-")  # Creates a player
 #me.add_item("Sword")
 print("Welcome to the bomb game!\n")
